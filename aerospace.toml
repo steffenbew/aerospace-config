@@ -33,6 +33,8 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+#
+# Mouse follows focus when focused window changes
 on-focus-changed = ['move-mouse window-lazy-center']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
@@ -83,16 +85,6 @@ automatically-unhide-macos-hidden-apps = false
     # All possible modifiers: cmd, alt, ctrl, shift
 
     # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
-
-    # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
-    # You can uncomment the following lines to open up terminal with alt + enter shortcut
-    # (like in i3)
-    # alt-enter = '''exec-and-forget osascript -e '
-    # tell application "Terminal"
-    #     do script
-    #     activate
-    # end tell'
-    # '''
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
     alt-slash = 'layout tiles horizontal vertical'
@@ -161,9 +153,6 @@ automatically-unhide-macos-hidden-apps = false
     r = ['flatten-workspace-tree', 'mode main'] # reset layout
     f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main']
-
-    # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
-    #s = ['layout sticky tiling', 'mode main']
 
     alt-shift-h = ['join-with left', 'mode main']
     alt-shift-j = ['join-with down', 'mode main']
