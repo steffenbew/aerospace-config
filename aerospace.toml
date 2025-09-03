@@ -136,23 +136,23 @@ automatically-unhide-macos-hidden-apps = false
 
     alt-z = 'fullscreen'
 
-    alt-enter = 'exec-and-forget open -n -a /Applications/Ghostty.app'
-    alt-a = 'exec-and-forget open -a /Applications/ChatGPT.app'
+    alt-enter = 'exec-and-forget open -n -a Ghostty.app'
+    alt-a = 'exec-and-forget open -a ChatGPT.app'
     alt-b = '''exec-and-forget osascript -e '
     tell application "Google Chrome"
         make new window
         activate
     end tell'
     '''
-    alt-c = 'exec-and-forget open -a ~/Applications/Chrome\ Apps.localized/Google\ Chat.app'
-    alt-d = 'exec-and-forget open -a ~/Applications/Calendar.app'
+    alt-c = 'exec-and-forget open -a Google\ Chat.app'
+    alt-d = 'exec-and-forget open -a Google\ Calendar.app'
     alt-e = 'exec-and-forget open -a Finder.app'
-    alt-i = 'exec-and-forget open -a ~/Applications/Chrome\ Apps.localized/Gmail.app'
-    alt-m = 'exec-and-forget open -n ~/Applications/Chrome\ Apps.localized/Monday.crwebloc'
-    alt-p = 'exec-and-forget open ~/Applications/Chrome\ Apps.localized/Presentations.crwebloc'
-    alt-s = 'exec-and-forget open -a ~/Applications/Chrome\ Apps.localized/Sales\ Pipeline.app'
-    alt-t = 'exec-and-forget open -a /System/Applications/Notes.app'
-    alt-v = 'exec-and-forget open -a ~/Applications/Chrome\ Apps.loCalized/Google\ Meet.app'
+    alt-i = 'exec-and-forget open -a Gmail.app'
+    alt-m = 'exec-and-forget open "https://bleech.monday.com/my_inbox"'
+    alt-p = 'exec-and-forget open "https://drive.google.com/drive/folders/1A5sRwrf1xUYMAasHINA11GCLESSSe5RQ"'
+    alt-s = 'exec-and-forget open "https://bleech.monday.com/boards/945652202/views/160554991"'
+    alt-t = 'exec-and-forget open -a Notes.app'
+    alt-v = 'exec-and-forget open -a Google\ Meet.app'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
