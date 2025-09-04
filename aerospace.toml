@@ -160,7 +160,15 @@ automatically-unhide-macos-hidden-apps = false
     alt-shift-l = ['join-with right', 'mode main']
 
 [[on-window-detected]]
-  if.app-name-regex-substring = 'finder'
+  if.app-name-regex-substring = 'Finder'
+  run = 'layout floating'
+
+[[on-window-detected]]
+  if.app-name-regex-substring = 'Messages'
+  run = 'layout floating'
+
+[[on-window-detected]]
+  if.app-name-regex-substring = 'Harvest'
   run = 'layout floating'
 
 [[on-window-detected]]
