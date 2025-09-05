@@ -124,6 +124,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-quote = 'join-with right'
     alt-f = 'layout floating tiling' # Toggle between floating and tiling layout
     alt-r = 'flatten-workspace-tree' # reset layout
+    alt-z = 'macos-native-fullscreen'
     alt-backslash = 'layout tiles accordion'
     alt-backspace = 'close-all-windows-but-current'
     alt-esc = 'reload-config'
@@ -142,10 +143,11 @@ automatically-unhide-macos-hidden-apps = false
     alt-e = 'exec-and-forget open -a Finder.app'
     alt-i = 'exec-and-forget open -a Gmail.app'
     alt-m = 'exec-and-forget open "https://bleech.monday.com/my_inbox"'
+    alt-n = 'exec-and-forget open -a Notes.app'
     alt-p = 'exec-and-forget open "https://drive.google.com/drive/folders/1A5sRwrf1xUYMAasHINA11GCLESSSe5RQ"'
     alt-s = 'exec-and-forget open "https://bleech.monday.com/boards/945652202/views/160554991"'
-    alt-t = 'exec-and-forget open -a Notes.app'
     alt-v = 'exec-and-forget open -a Google\ Meet.app'
+    alt-w = 'exec-and-forget open -a iA\ Writer.app'
 
 [[on-window-detected]]
   if.app-name-regex-substring = 'Finder'
