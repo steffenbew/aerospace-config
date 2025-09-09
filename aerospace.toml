@@ -33,14 +33,11 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
-#
-# Mouse follows focus when focused window changes
-on-focus-changed = ['move-mouse window-lazy-center']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
 # Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
-automatically-unhide-macos-hidden-apps = false
+automatically-unhide-macos-hidden-apps = true
 
 # Possible values: (qwerty|dvorak|colemak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
@@ -120,14 +117,10 @@ automatically-unhide-macos-hidden-apps = false
     alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-    alt-semicolon = 'join-with left'
-    alt-quote = 'join-with right'
-    alt-f = 'layout floating tiling' # Toggle between floating and tiling layout
-    alt-r = 'flatten-workspace-tree' # reset layout
-    alt-z = 'macos-native-fullscreen'
-    alt-backslash = 'layout tiles accordion'
-    alt-backspace = 'close-all-windows-but-current'
-    alt-esc = 'reload-config'
+    alt-ctrl-f = 'layout floating tiling'
+    alt-shift-r = 'flatten-workspace-tree'
+    alt-slash = 'layout tiles accordion'
+    alt-shift-backspace = 'close-all-windows-but-current'
 
     # App shortcuts
     alt-enter = 'exec-and-forget open -n -a Ghostty.app'
@@ -140,7 +133,13 @@ automatically-unhide-macos-hidden-apps = false
     '''
     alt-c = 'exec-and-forget open -a Google\ Chat.app'
     alt-d = 'exec-and-forget open -a Google\ Calendar.app'
-    alt-e = 'exec-and-forget open -a Finder.app'
+    alt-e = '''exec-and-forget osascript -e '
+    tell application "Finder"
+      set t to (new window target of Finder preferences) as alias
+      make new Finder window to t
+      activate
+    end tell'
+    '''
     alt-i = 'exec-and-forget open -a Gmail.app'
     alt-m = 'exec-and-forget open "https://bleech.monday.com/my_inbox"'
     alt-n = 'exec-and-forget open -a Notes.app'
@@ -149,47 +148,29 @@ automatically-unhide-macos-hidden-apps = false
     alt-v = 'exec-and-forget open -a Google\ Meet.app'
     alt-w = 'exec-and-forget open -a iA\ Writer.app'
 
+# 'service' binding mode declaration.
+# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+[mode.service.binding]
+    esc = ['reload-config', 'mode main']
+
+    alt-shift-h = ['join-with left', 'mode main']
+    alt-shift-j = ['join-with down', 'mode main']
+    alt-shift-k = ['join-with up', 'mode main']
+    alt-shift-l = ['join-with right', 'mode main']
+
 [[on-window-detected]]
-  if.app-name-regex-substring = 'Finder'
+  if.app-name-regex-substring = '(1Password|Finder|Messages)'
   run = 'layout floating'
 
 [[on-window-detected]]
-  if.app-name-regex-substring = 'Messages'
-  run = 'layout floating'
-
-[[on-window-detected]]
-  if.app-name-regex-substring = 'Harvest'
-  run = 'layout floating'
-
-[[on-window-detected]]
-  if.app-name-regex-substring = '1Password'
-  run = 'layout floating'
-
-[[on-window-detected]]
-  if.app-name-regex-substring = 'Gmail'
+  if.app-name-regex-substring = '(Gmail|Google Chat)'
   run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
-  if.app-name-regex-substring = 'Google Chat'
-  run = 'move-node-to-workspace 2'
-
-[[on-window-detected]]
-  if.app-name-regex-substring = 'Calendar'
+  if.app-name-regex-substring = '(Calendar|Notes)'
   run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]
-  if.app-name-regex-substring = 'Notes'
-  run = 'move-node-to-workspace 3'
-
-[[on-window-detected]]
-  if.app-name-regex-substring = 'Google Meet'
-  run = 'move-node-to-workspace 4'
-
-[[on-window-detected]]
-  if.app-name-regex-substring = 'Microsoft Teams'
-  run = 'move-node-to-workspace 4'
-
-[[on-window-detected]]
-  if.app-name-regex-substring = 'zoom.us'
+  if.app-name-regex-substring = '(Google Meet|Microsoft Teams|zoom.us)'
   run = 'move-node-to-workspace 4'
 
