@@ -148,6 +148,9 @@ automatically-unhide-macos-hidden-apps = true
     alt-v = 'exec-and-forget open -a Google\ Meet.app'
     alt-w = 'exec-and-forget open -a iA\ Writer.app'
 
+    # See: https://nikitabobko.github.io/AeroSpace/commands#mode
+    alt-shift-semicolon = 'mode service'
+
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
