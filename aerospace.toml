@@ -133,7 +133,7 @@ automatically-unhide-macos-hidden-apps = true
     '''
     alt-ctrl-cmd-c = 'exec-and-forget open -a Google\ Chat.app'
     alt-ctrl-cmd-d = 'exec-and-forget open -a Google\ Calendar.app'
-    alt-ctrl-cmd-e = '''exec-and-forget osascript -e '
+    alt-ctrl-cmd-f = '''exec-and-forget osascript -e '
     tell application "Finder"
       set t to (new window target of Finder preferences) as alias
       make new Finder window to t
