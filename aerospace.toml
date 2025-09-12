@@ -162,7 +162,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-ctrl-cmd-shift-l = ['join-with right', 'mode main']
 
 [[on-window-detected]]
-  if.app-name-regex-substring = '(1Password|Finder|Messages)'
+  if.app-name-regex-substring = '(1Password|Finder|Messages|Music)'
   run = 'layout floating'
 
 [[on-window-detected]]
