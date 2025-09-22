@@ -135,30 +135,30 @@ automatically-unhide-macos-hidden-apps = true
     alt-ctrl-cmd-backspace = 'close-all-windows-but-current'
 
     # App shortcuts
-    alt-ctrl-cmd-enter = 'exec-and-forget open -n -a Ghostty.app'
-    alt-ctrl-cmd-a = 'exec-and-forget open -a ChatGPT.app'
+    alt-ctrl-cmd-enter = 'exec-and-forget open -n -a Ghostty.app' # terminal
+    alt-ctrl-cmd-a = 'exec-and-forget open -a ChatGPT.app' # ai
     alt-ctrl-cmd-b = '''exec-and-forget osascript -e '
     tell application "Google Chrome"
         make new window
         activate
     end tell'
-    '''
-    alt-ctrl-cmd-c = 'exec-and-forget open -a Google\ Chat.app'
-    alt-ctrl-cmd-d = 'exec-and-forget open -a Google\ Calendar.app'
+    ''' # browser
+    alt-ctrl-cmd-c = 'exec-and-forget open -a Google\ Calendar.app' # calendar
     alt-ctrl-cmd-f = '''exec-and-forget osascript -e '
     tell application "Finder"
       set t to (new window target of Finder preferences) as alias
       make new Finder window to t
       activate
     end tell'
-    '''
-    alt-ctrl-cmd-i = 'exec-and-forget open -a Gmail.app'
-    alt-ctrl-cmd-m = 'exec-and-forget open "https://bleech.monday.com/my_inbox"'
-    alt-ctrl-cmd-n = 'exec-and-forget open -a Notes.app'
-    alt-ctrl-cmd-p = 'exec-and-forget open "https://drive.google.com/drive/folders/1A5sRwrf1xUYMAasHINA11GCLESSSe5RQ"'
-    alt-ctrl-cmd-s = 'exec-and-forget open "https://bleech.monday.com/boards/945652202/views/160554991"'
-    alt-ctrl-cmd-v = 'exec-and-forget open -a Google\ Meet.app'
-    alt-ctrl-cmd-w = 'exec-and-forget open -a iA\ Writer.app'
+    ''' # files
+    alt-ctrl-cmd-i = 'exec-and-forget open -a Gmail.app' # inbox
+    alt-ctrl-cmd-m = 'exec-and-forget open -a Google\ Chat.app' # messages
+    alt-ctrl-cmd-n = 'exec-and-forget open -a Notes.app' # notes
+    alt-ctrl-cmd-p = 'exec-and-forget open "https://drive.google.com/drive/folders/1A5sRwrf1xUYMAasHINA11GCLESSSe5RQ"' # presentations
+    alt-ctrl-cmd-s = 'exec-and-forget open "https://bleech.monday.com/boards/945652202/views/160554991"' # sales
+    alt-ctrl-cmd-u = 'exec-and-forget open "https://bleech.monday.com/my_inbox"' # updates
+    alt-ctrl-cmd-v = 'exec-and-forget open -a Google\ Meet.app' # videocalls
+    alt-ctrl-cmd-w = 'exec-and-forget open -a iA\ Writer.app' # writing
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-ctrl-cmd-shift-semicolon = 'mode service'
@@ -174,7 +174,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-ctrl-cmd-shift-l = ['join-with right', 'mode main']
 
 [[on-window-detected]]
-  if.app-name-regex-substring = '(1Password|Finder|Messages|Music)'
+  if.app-name-regex-substring = '(1Password|Finder|Messages|Music|Preview)'
   run = 'layout floating'
 
 [[on-window-detected]]
