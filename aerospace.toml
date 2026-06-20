@@ -151,6 +151,7 @@ automatically-unhide-macos-hidden-apps = true
       activate
     end tell'
     ''' # files
+    alt-ctrl-cmd-d = 'exec-and-forget open -a Drafts.app' # drafts
     alt-ctrl-cmd-i = 'exec-and-forget open -a Gmail.app' # inbox
     alt-ctrl-cmd-m = 'exec-and-forget open -a Google\ Chat.app' # messages
     alt-ctrl-cmd-n = 'exec-and-forget open -a Notes.app' # notes
