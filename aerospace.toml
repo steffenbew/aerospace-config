@@ -175,7 +175,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-ctrl-cmd-shift-l = ['join-with right', 'mode main']
 
 [[on-window-detected]]
-  if.app-name-regex-substring = '(1Password|Finder|Messages|Music|Preview|Keka)'
+  if.app-name-regex-substring = '(1Password|Finder|Messages|Music|Preview|Keka|Harvest)'
   run = 'layout floating'
 
 [[on-window-detected]]
