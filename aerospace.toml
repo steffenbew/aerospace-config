@@ -132,8 +132,8 @@ automatically-unhide-macos-hidden-apps = true
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
     alt-shift-f = 'layout floating tiling'
-    alt-ctrl-cmd-r = 'flatten-workspace-tree'
-    alt-ctrl-cmd-slash = 'layout tiles accordion'
+    alt-ctrl-cmd-r = 'exec-and-forget $HOME/.config/aerospace/scripts/toggle-autosplit.sh'
+    alt-ctrl-cmd-slash = ['layout --root tiles accordion', 'exec-and-forget $HOME/.config/aerospace/scripts/autosplit.sh']
     alt-ctrl-cmd-backspace = 'close-all-windows-but-current'
 
     # App shortcuts
@@ -179,16 +179,24 @@ automatically-unhide-macos-hidden-apps = true
 [[on-window-detected]]
   if.app-name-regex-substring = '(1Password|Finder|Messages|Music|Preview|Keka|Harvest)'
   run = 'layout floating'
+  check-further-callbacks = true
 
 [[on-window-detected]]
   if.app-name-regex-substring = '(Gmail|Google Chat)'
   run = 'move-node-to-workspace 2'
+  check-further-callbacks = true
 
 [[on-window-detected]]
   if.app-name-regex-substring = '(Calendar|Notes)'
   run = 'move-node-to-workspace 3'
+  check-further-callbacks = true
 
 [[on-window-detected]]
   if.app-name-regex-substring = '(Google Meet|Microsoft Teams|zoom.us)'
   run = 'move-node-to-workspace 4'
+  check-further-callbacks = true
+
+[[on-window-detected]]
+  if = 'true'
+  run = 'exec-and-forget $HOME/.config/aerospace/scripts/autosplit.sh'
 
