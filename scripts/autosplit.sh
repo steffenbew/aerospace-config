@@ -13,6 +13,22 @@ fi
 
 [ -n "$ws" ] || ws="$(aerospace list-workspaces --focused)"
 
+# For keybinding-triggered runs there is no AEROSPACE_WINDOW_ID. Still keep
+# track of the currently focused window so rebuilding the tree does not move
+# focus unexpectedly. Read its layout in the same call to avoid another
+# list-windows --all lookup below.
+original_layout=""
+if [ -z "$original" ]; then
+  focused_window="$(aerospace list-windows --focused --format '%{window-id} %{window-parent-container-layout}' 2>/dev/null || true)"
+  original="${focused_window%% *}"
+  original_layout="${focused_window#* }"
+
+  if [ "$original" = "$focused_window" ]; then
+    original=""
+    original_layout=""
+  fi
+fi
+
 root_layout="$(
   aerospace list-workspaces --all --format '%{workspace} %{workspace-root-container-layout}' |
     awk -v ws="$ws" '$1 == ws { print $2; exit }'
@@ -25,44 +41,83 @@ fi
 
 # If the triggering window is floating, leave the tiled layout alone.
 if [ -n "$original" ]; then
-  original_layout="$(
-    aerospace list-windows --all --format '%{window-id} %{window-parent-container-layout}' |
-      awk -v id="$original" '$1 == id { print $2; exit }'
-  )"
+  if [ -z "$original_layout" ]; then
+    original_layout="$(
+      aerospace list-windows --all --format '%{window-id} %{window-parent-container-layout}' |
+        awk -v id="$original" '$1 == id { print $2; exit }'
+    )"
+  fi
 
   if [ "$original_layout" = "floating" ]; then
     exit 0
   fi
 fi
 
-windows=()
-while IFS= read -r id; do
-  windows+=("$id")
-done < <(
+count="$(
   aerospace list-windows --workspace "$ws" \
-    --format '%{window-id} %{window-parent-container-layout}' |
-    awk '$2 != "floating" { print $1 }' |
-    sort -n
-)
+    --format '%{window-parent-container-layout}' |
+    awk '$1 != "floating" { count++ } END { print count + 0 }'
+)"
 
-count="${#windows[@]}"
+windows=()
+
+# Only the 3- and 4-window autosplit layouts need exact window order. Simpler
+# counts can skip the DFS walk entirely.
+if [ "$count" -eq 3 ] || [ "$count" -eq 4 ]; then
+  focused_ws="$(aerospace list-workspaces --focused)"
+
+  # `list-windows` is stable by window creation order, not by the current tree
+  # order. For the focused workspace, walk AeroSpace's DFS order instead so
+  # manual move/swap operations are respected before we rebuild the layout.
+  # Batch the focus/list commands into one AeroSpace call to keep this fast.
+  if [ "$ws" = "$focused_ws" ]; then
+    focused_before="$(aerospace list-windows --focused --format '%{window-id}' 2>/dev/null || true)"
+    total_windows="$(aerospace list-windows --workspace "$ws" --count)"
+    expr=""
+
+    for ((i = 0; i < total_windows; i++)); do
+      expr+="focus --dfs-index $i; "
+      expr+="list-windows --focused --format '%{window-id} %{window-parent-container-layout}'; "
+    done
+
+    if [ -n "$focused_before" ]; then
+      expr+="focus --window-id $focused_before"
+    fi
+
+    while IFS= read -r line; do
+      id="${line%% *}"
+      layout="${line#* }"
+
+      if [ -n "$id" ] && [ "$layout" != "floating" ]; then
+        windows+=("$id")
+      fi
+    done < <(aerospace eval "$expr" 2>/dev/null || true)
+  fi
+
+  # Fallback for non-focused workspaces, or if DFS collection failed.
+  if [ "${#windows[@]}" -eq 0 ]; then
+    while IFS= read -r id; do
+      windows+=("$id")
+    done < <(
+      aerospace list-windows --workspace "$ws" \
+        --format '%{window-id} %{window-parent-container-layout}' |
+        awk '$2 != "floating" { print $1 }'
+    )
+  fi
+fi
 
 case "$count" in
   0|1)
-    aerospace flatten-workspace-tree --workspace "$ws"
-    aerospace layout --workspace "$ws" --root h_tiles
+    aerospace eval "flatten-workspace-tree --workspace $ws; layout --workspace $ws --root h_tiles"
     ;;
 
   2)
-    aerospace flatten-workspace-tree --workspace "$ws"
-    aerospace layout --workspace "$ws" --root h_tiles
-    aerospace balance-sizes --workspace "$ws"
+    aerospace eval "flatten-workspace-tree --workspace $ws; layout --workspace $ws --root h_tiles; balance-sizes --workspace $ws"
     ;;
 
   3)
-    # Reinsert windows in creation order first. Without this, creating the
-    # third window while the first window is focused can leave the second
-    # window at the far right, so join-with has no right-hand neighbor.
+    # Reinsert windows in the current AeroSpace order first. This preserves
+    # manual reordering instead of falling back to window creation order.
     temp_ws="autosplit-temp-$$"
     expr=""
 
@@ -86,7 +141,7 @@ case "$count" in
     ;;
 
   4)
-    # Reinsert windows in the order we want before grouping them.
+    # Reinsert windows based on the current AeroSpace order before grouping them.
     # Batch everything into one AeroSpace eval call to reduce visible flicker.
     temp_ws="autosplit-temp-$$"
     expr=""
@@ -112,9 +167,7 @@ case "$count" in
     ;;
 
   *)
-    aerospace flatten-workspace-tree --workspace "$ws"
-    aerospace layout --workspace "$ws" --root h_tiles
-    aerospace balance-sizes --workspace "$ws"
+    aerospace eval "flatten-workspace-tree --workspace $ws; layout --workspace $ws --root h_tiles; balance-sizes --workspace $ws"
     ;;
 esac
 
