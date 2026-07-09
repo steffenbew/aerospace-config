@@ -3,6 +3,9 @@
 
 config-version = 2
 
+# Keep the named core workspaces visible even when empty.
+persistent-workspaces = ["build", "shape", "plan", "message", "meet", "run"]
+
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
@@ -102,28 +105,28 @@ automatically-unhide-macos-hidden-apps = true
     alt-ctrl-cmd-equal = 'resize smart +160'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-ctrl-cmd-1 = 'workspace 1'
-    alt-ctrl-cmd-2 = 'workspace 2'
-    alt-ctrl-cmd-3 = 'workspace 3'
-    alt-ctrl-cmd-4 = 'workspace 4'
+    alt-ctrl-cmd-1 = 'workspace shape'
+    alt-ctrl-cmd-2 = 'workspace plan'
+    alt-ctrl-cmd-3 = 'workspace message'
+    alt-ctrl-cmd-4 = 'workspace meet'
     alt-ctrl-cmd-5 = 'workspace 5'
     alt-ctrl-cmd-6 = 'workspace 6'
     alt-ctrl-cmd-7 = 'workspace 7'
     alt-ctrl-cmd-8 = 'workspace 8'
-    alt-ctrl-cmd-9 = 'workspace 9'
-    alt-ctrl-cmd-0 = 'workspace 10'
+    alt-ctrl-cmd-9 = 'workspace run'
+    alt-ctrl-cmd-0 = 'workspace build'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-    alt-ctrl-cmd-shift-1 = 'move-node-to-workspace --focus-follows-window 1'
-    alt-ctrl-cmd-shift-2 = 'move-node-to-workspace --focus-follows-window 2'
-    alt-ctrl-cmd-shift-3 = 'move-node-to-workspace --focus-follows-window 3'
-    alt-ctrl-cmd-shift-4 = 'move-node-to-workspace --focus-follows-window 4'
+    alt-ctrl-cmd-shift-1 = 'move-node-to-workspace --focus-follows-window shape'
+    alt-ctrl-cmd-shift-2 = 'move-node-to-workspace --focus-follows-window plan'
+    alt-ctrl-cmd-shift-3 = 'move-node-to-workspace --focus-follows-window message'
+    alt-ctrl-cmd-shift-4 = 'move-node-to-workspace --focus-follows-window meet'
     alt-ctrl-cmd-shift-5 = 'move-node-to-workspace --focus-follows-window 5'
     alt-ctrl-cmd-shift-6 = 'move-node-to-workspace --focus-follows-window 6'
     alt-ctrl-cmd-shift-7 = 'move-node-to-workspace --focus-follows-window 7'
     alt-ctrl-cmd-shift-8 = 'move-node-to-workspace --focus-follows-window 8'
-    alt-ctrl-cmd-shift-9 = 'move-node-to-workspace --focus-follows-window 9'
-    alt-ctrl-cmd-shift-0 = 'move-node-to-workspace --focus-follows-window 10'
+    alt-ctrl-cmd-shift-9 = 'move-node-to-workspace --focus-follows-window run'
+    alt-ctrl-cmd-shift-0 = 'move-node-to-workspace --focus-follows-window build'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-ctrl-cmd-tab = 'workspace-back-and-forth'
@@ -183,17 +186,17 @@ automatically-unhide-macos-hidden-apps = true
 
 [[on-window-detected]]
   if.app-name-regex-substring = '(Gmail|Google Chat)'
-  run = 'move-node-to-workspace 2'
+  run = 'move-node-to-workspace message'
   check-further-callbacks = true
 
 [[on-window-detected]]
   if.app-name-regex-substring = '(Calendar|Notes)'
-  run = 'move-node-to-workspace 3'
+  run = 'move-node-to-workspace plan'
   check-further-callbacks = true
 
 [[on-window-detected]]
   if.app-name-regex-substring = '(Google Meet|Microsoft Teams|zoom.us)'
-  run = 'move-node-to-workspace 4'
+  run = 'move-node-to-workspace meet'
   check-further-callbacks = true
 
 [[on-window-detected]]
