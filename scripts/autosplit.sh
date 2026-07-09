@@ -167,7 +167,9 @@ case "$count" in
     ;;
 
   *)
-    aerospace eval "flatten-workspace-tree --workspace $ws; layout --workspace $ws --root h_tiles; balance-sizes --workspace $ws"
+    # For 5+ tiled windows, keep AeroSpace's current tree. Flattening here
+    # destroys the existing autosplit shape and turns everything into one row.
+    aerospace balance-sizes --workspace "$ws"
     ;;
 esac
 
