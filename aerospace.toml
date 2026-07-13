@@ -182,7 +182,7 @@ automatically-unhide-macos-hidden-apps = true
 [[on-window-detected]]
   if.app-name-regex-substring = '(1Password|Finder|Messages|Music|Preview|Keka|Harvest)'
   run = 'layout floating'
-  check-further-callbacks = true
+  check-further-callbacks = false
 
 [[on-window-detected]]
   if.app-name-regex-substring = '(Gmail|Google Chat)'

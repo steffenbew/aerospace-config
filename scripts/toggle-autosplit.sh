@@ -1,99 +1,95 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-is_flat_h_tiles() {
-  [ "$(aerospace list-workspaces --focused --format '%{workspace-root-container-layout}')" = "h_tiles" ] &&
-    aerospace list-windows --workspace focused \
-      --format '%{window-parent-container-layout}' |
-      awk '$0 != "floating" && $0 != "h_tiles" { found = 1 } END { exit found }'
-}
+# Share the autosplit lock so a manual toggle cannot race a window callback.
+if [ "${AEROSPACE_AUTOSPLIT_LOCKED:-}" != "1" ]; then
+  export AEROSPACE_AUTOSPLIT_LOCKED=1
+  exec lockf -k -s -t 5 "${TMPDIR:-/tmp}/aerospace-autosplit-${UID}.lock" "$0" "$@"
+fi
+
+# Take one snapshot up front and reuse it to choose and execute the toggle.
+focused_line="$(
+  aerospace list-windows --focused \
+    --format '%{window-id}|%{workspace}|%{workspace-root-container-layout}' \
+    2>/dev/null || true
+)"
+IFS='|' read -r original focused_ws root_layout <<< "$focused_line"
+
+if [ -z "$focused_ws" ]; then
+  workspace_line="$(
+    aerospace list-workspaces --focused \
+      --format '%{workspace}|%{workspace-root-container-layout}'
+  )"
+  IFS='|' read -r focused_ws root_layout <<< "$workspace_line"
+fi
+
+workspace_windows="$(
+  aerospace list-windows --workspace focused \
+    --format '%{window-id}|%{window-parent-container-layout}'
+)"
+read -r tiled_count total_windows has_nested <<< "$(
+  printf '%s\n' "$workspace_windows" |
+    awk -F '|' '
+      $1 != "" {
+        total++
+        if ($2 != "floating") {
+          tiled++
+          if ($2 != "h_tiles") nested = 1
+        }
+      }
+      END { print tiled + 0, total + 0, nested + 0 }
+    '
+)"
 
 flatten_in_current_order() {
-  local original focused_ws tiled_count total_windows line id layout temp_ws expr
-  local -a windows ordered
+  local line id layout i
+  local -a windows
 
-  original="$(aerospace list-windows --focused --format '%{window-id}' 2>/dev/null || true)"
-  focused_ws="$(aerospace list-workspaces --focused)"
-  tiled_count="$(
-    aerospace list-windows --workspace focused \
-      --format '%{window-parent-container-layout}' |
-      awk '$1 != "floating" { count++ } END { print count + 0 }'
-  )"
-
-  # With 0-2 tiled windows, there is no custom autosplit tree to preserve.
-  # For 3+ windows, keep the explicit order-preserving rebuild logic.
-  if [ "$tiled_count" -le 2 ]; then
+  # Flattening already preserves DFS order. Only the 2x2 autosplit grid needs
+  # an explicit row-major conversion before becoming one horizontal row.
+  if [ "$tiled_count" -ne 4 ]; then
     aerospace eval 'flatten-workspace-tree; layout --root h_tiles; balance-sizes'
     return
   fi
 
-  total_windows="$(aerospace list-windows --workspace focused --count)"
-
-  # Walk the current AeroSpace tree order, but batch all focus/list commands
-  # into one AeroSpace call. This keeps the correct behavior with much less
-  # CLI overhead than one call per DFS index.
+  # Walk the current AeroSpace tree order. Keep each focus in a separate
+  # session because batching DFS focus commands can corrupt AeroSpace 0.21.2's
+  # tree when floating windows exist. Pair each focus with its read to avoid
+  # an extra CLI round trip.
   windows=()
-  expr=""
 
   for ((i = 0; i < total_windows; i++)); do
-    expr+="focus --dfs-index $i; "
-    expr+="list-windows --focused --format '%{window-id} %{window-parent-container-layout}'; "
-  done
-
-  if [ -n "$original" ]; then
-    expr+="focus --window-id $original"
-  fi
-
-  while IFS= read -r line; do
+    line="$(
+      aerospace eval "focus --dfs-index $i; list-windows --focused --format '%{window-id} %{window-parent-container-layout}'" \
+        2>/dev/null || true
+    )"
     id="${line%% *}"
     layout="${line#* }"
 
-    if [ -n "$id" ] && [ "$layout" != "floating" ]; then
+    if [ -n "$id" ] && [ "$id" != "$line" ] && [ "$layout" != "floating" ]; then
       windows+=("$id")
     fi
-  done < <(aerospace eval "$expr" 2>/dev/null || true)
-
-  case "${#windows[@]}" in
-    0)
-      aerospace eval 'flatten-workspace-tree; layout --root h_tiles; balance-sizes'
-      return
-      ;;
-    4)
-      # The 4-window autosplit tree is column-major in DFS order:
-      # [0][2]
-      # [1][3]
-      # Convert it back to the logical order autosplit expects, so toggling
-      # flat -> autosplit preserves the same visual positions.
-      ordered=("${windows[0]}" "${windows[2]}" "${windows[3]}" "${windows[1]}")
-      ;;
-    *)
-      ordered=("${windows[@]}")
-      ;;
-  esac
-
-  temp_ws="autosplit-temp-$$"
-  expr=""
-
-  for id in "${windows[@]}"; do
-    expr+="move-node-to-workspace --window-id $id $temp_ws; "
   done
 
-  for id in "${ordered[@]}"; do
-    expr+="move-node-to-workspace --window-id $id $focused_ws; "
-  done
+  if [ "${#windows[@]}" -ne "$tiled_count" ]; then
+    aerospace eval 'flatten-workspace-tree; layout --root h_tiles; balance-sizes'
+    if [ -n "$original" ]; then
+      aerospace focus --window-id "$original" >/dev/null 2>&1 || true
+    fi
+    return
+  fi
 
-  expr+="flatten-workspace-tree --workspace $focused_ws; "
-  expr+="layout --workspace $focused_ws --root h_tiles; "
-  expr+="balance-sizes --workspace $focused_ws"
-
-  aerospace eval "$expr"
+  # The 4-window autosplit tree is column-major in DFS order. Flattening
+  # yields [A D B C]. Move D to the far right to get row-major [A B C D]
+  # without moving any window through a temporary workspace.
+  aerospace eval "flatten-workspace-tree --workspace $focused_ws; layout --workspace $focused_ws --root h_tiles; swap --window-id ${windows[1]} right; swap --window-id ${windows[1]} right; balance-sizes --workspace $focused_ws"
 
   if [ -n "$original" ]; then
     aerospace focus --window-id "$original" || true
   fi
 }
 
-if is_flat_h_tiles; then
+if [ "$root_layout" = "h_tiles" ] && [ "$has_nested" -eq 0 ]; then
   "$HOME/.config/aerospace/scripts/autosplit.sh"
 else
   flatten_in_current_order
